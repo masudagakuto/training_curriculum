@@ -17,6 +17,7 @@ GEM
       actionview (= 6.0.3.6)
       activejob (= 6.0.3.6)
       mail (~> 2.5, >= 2.5.4)
+      rails-dom-testing (~> 2.0)
     actionpack (6.0.3.6)
       actionview (= 6.0.3.6)
       activesupport (= 6.0.3.6)
