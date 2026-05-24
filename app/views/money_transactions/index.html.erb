@@ -1,0 +1,103 @@
+<div class="money-transactions">
+  <h1>💰 お金の記録</h1>
+
+  <% if notice.present? %>
+    <div class="notice"><%= notice %></div>
+  <% end %>
+
+  <%# ── 収支サマリー ── %>
+  <div class="balance-summary">
+    <div class="balance-item paid">
+      <span class="label">支払い合計</span>
+      <span class="amount">¥<%= number_with_delimiter(@paid_total) %></span>
+    </div>
+    <div class="balance-item received">
+      <span class="label">受取り合計</span>
+      <span class="amount">¥<%= number_with_delimiter(@received_total) %></span>
+    </div>
+    <div class="balance-item balance <%= @balance >= 0 ? 'positive' : 'negative' %>">
+      <span class="label">収支</span>
+      <span class="amount">
+        <%= @balance >= 0 ? '+' : '' %>¥<%= number_with_delimiter(@balance) %>
+      </span>
+    </div>
+  </div>
+
+  <%# ── Webフォームで手動入力 ── %>
+  <div class="new-transaction-form">
+    <h2>新しい記録を追加</h2>
+    <%= form_with model: @new_transaction, url: money_transactions_path, local: true do |f| %>
+      <% if @new_transaction.errors.any? %>
+        <div class="errors">
+          <ul>
+            <% @new_transaction.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="form-row">
+        <%= f.select :transaction_type,
+            [['払った', 'paid'], ['もらった', 'received']],
+            {}, class: 'select-input' %>
+
+        <%= f.text_field :person, placeholder: '相手の名前', class: 'text-input' %>
+
+        <%= f.number_field :amount, placeholder: '金額（円）', min: 1, class: 'text-input' %>
+
+        <%= f.date_field :date, value: Date.today, class: 'date-select' %>
+
+        <%= f.text_field :note, placeholder: 'メモ（任意）', class: 'text-input' %>
+
+        <%= f.submit '記録する', class: 'submit-btn' %>
+      </div>
+    <% end %>
+  </div>
+
+  <%# ── 取引一覧 ── %>
+  <div class="transactions-list">
+    <h2>取引履歴</h2>
+    <% if @transactions.empty? %>
+      <p class="empty-message">まだ記録がありません。LINEまたは上のフォームから記録してください。</p>
+    <% else %>
+      <table class="transactions-table">
+        <thead>
+          <tr>
+            <th>日付</th>
+            <th>種別</th>
+            <th>相手</th>
+            <th>金額</th>
+            <th>メモ</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @transactions.each do |t| %>
+            <tr class="<%= t.transaction_type %>">
+              <td><%= t.date.strftime('%Y/%m/%d') %></td>
+              <td>
+                <span class="badge <%= t.transaction_type %>">
+                  <%= t.transaction_type == 'paid' ? '払った' : 'もらった' %>
+                </span>
+              </td>
+              <td><%= t.person %></td>
+              <td>¥<%= number_with_delimiter(t.amount) %></td>
+              <td><%= t.note %></td>
+              <td>
+                <%= button_to '削除', money_transaction_path(t),
+                    method: :delete,
+                    data: { confirm: '本当に削除しますか？' },
+                    class: 'delete-btn' %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+  </div>
+
+  <div class="nav-link">
+    <%= link_to '← カレンダーに戻る', root_path %>
+  </div>
+</div>

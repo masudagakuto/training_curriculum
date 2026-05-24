@@ -29,3 +29,7 @@
 /yarn-error.log
 yarn-debug.log*
 .yarn-integrity
+
+# 環境変数ファイル（実際のキーを含むため除外）
+.env
+.env.local
