@@ -1,8 +1,5 @@
 require_relative 'boot'
 
-# Ruby 3.x と Rails 6.0 の互換性パッチ
-require 'logger'
-
 require 'rails/all'
 
 # Require the gems listed in Gemfile, including any gems
