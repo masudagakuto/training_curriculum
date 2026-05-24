@@ -54,6 +54,3 @@ end
 gem 'tzinfo-data', platforms: [:windows, :jruby]
 
 gem 'pry-rails'
-
-# LINE Messaging API
-gem 'line-bot-api'
