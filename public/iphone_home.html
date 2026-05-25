@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iPhone ホーム画面</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    }
+
+    /* iPhone 本体 */
+    .iphone {
+      width: 390px;
+      height: 844px;
+      background: #000;
+      border-radius: 55px;
+      box-shadow:
+        0 0 0 2px #333,
+        0 0 0 5px #1a1a1a,
+        0 30px 80px rgba(0,0,0,0.8),
+        inset 0 0 0 2px #222;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Dynamic Island */
+    .dynamic-island {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 34px;
+      background: #000;
+      border-radius: 20px;
+      z-index: 100;
+    }
+
+    /* 壁紙 */
+    .wallpaper {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        160deg,
+        #0d47a1 0%,
+        #1565c0 15%,
+        #1976d2 30%,
+        #0288d1 45%,
+        #26c6da 60%,
+        #4dd0e1 75%,
+        #80deea 90%,
+        #b2ebf2 100%
+      );
+      border-radius: 55px;
+    }
+
+    /* 壁紙装飾 */
+    .wallpaper::before {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+      top: -50px;
+      right: -50px;
+      border-radius: 50%;
+    }
+    .wallpaper::after {
+      content: '';
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      bottom: 100px;
+      left: -30px;
+      border-radius: 50%;
+    }
+
+    /* ステータスバー */
+    .status-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 54px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding: 0 24px 8px;
+      z-index: 50;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .status-time {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .status-icons {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .status-icon {
+      font-size: 14px;
+    }
+
+    /* ホーム画面コンテンツ */
+    .home-content {
+      position: absolute;
+      top: 54px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 0 16px;
+    }
+
+    /* 日付ウィジェット */
+    .widget-date {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 16px 20px;
+      margin: 8px 0 16px;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .widget-date .day-name {
+      font-size: 13px;
+      color: rgba(255,255,255,0.85);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .widget-date .date-num {
+      font-size: 42px;
+      font-weight: 200;
+      color: #fff;
+      line-height: 1;
+      margin: 2px 0;
+    }
+
+    .widget-date .month-year {
+      font-size: 13px;
+      color: rgba(255,255,255,0.85);
+      font-weight: 500;
+    }
+
+    /* アプリグリッド */
+    .app-section {
+      margin-bottom: 16px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.7);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 8px;
+      padding-left: 4px;
+    }
+
+    .app-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .app-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .app-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      position: relative;
+    }
+
+    .app-icon::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      background: linear-gradient(160deg, rgba(255,255,255,0.25) 0%, transparent 50%);
+    }
+
+    .app-item:hover .app-icon {
+      transform: scale(1.08);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+
+    .app-item:active .app-icon {
+      transform: scale(0.95);
+    }
+
+    .app-name {
+      font-size: 11px;
+      color: #fff;
+      text-align: center;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+      font-weight: 500;
+      max-width: 60px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* アプリカラー定義 */
+    .icon-phone    { background: linear-gradient(145deg, #34c759, #25a244); }
+    .icon-message  { background: linear-gradient(145deg, #34c759, #30b350); }
+    .icon-mail     { background: linear-gradient(145deg, #0a84ff, #0071e3); }
+    .icon-safari   { background: linear-gradient(145deg, #0a84ff, #007aff); }
+    .icon-calendar { background: linear-gradient(145deg, #ff3b30, #e0291e); }
+    .icon-camera   { background: linear-gradient(145deg, #636366, #3a3a3c); }
+    .icon-photo    { background: linear-gradient(145deg, #ffcc00, #ff9500, #ff3b30, #af52de); }
+    .icon-clock    { background: linear-gradient(145deg, #636366, #1c1c1e); }
+    .icon-maps     { background: linear-gradient(145deg, #34c759, #30b350, #007aff); }
+    .icon-weather  { background: linear-gradient(145deg, #0a84ff, #32ade6); }
+    .icon-music    { background: linear-gradient(145deg, #ff2d55, #ff375f); }
+    .icon-podcast  { background: linear-gradient(145deg, #af52de, #9b59b6); }
+    .icon-note     { background: linear-gradient(145deg, #ffcc00, #ff9f0a); }
+    .icon-remind   { background: linear-gradient(145deg, #ff3b30, #e0291e); }
+    .icon-health   { background: linear-gradient(145deg, #ff2d55, #e82049); }
+    .icon-fitness  { background: linear-gradient(145deg, #ff3b30, #ff6b35); }
+    .icon-settings { background: linear-gradient(145deg, #636366, #8e8e93); }
+    .icon-store    { background: linear-gradient(145deg, #0a84ff, #0071e3); }
+    .icon-wallet   { background: linear-gradient(145deg, #1c1c1e, #3a3a3c); }
+    .icon-facetime { background: linear-gradient(145deg, #34c759, #25a244); }
+    .icon-tw       { background: linear-gradient(145deg, #1da1f2, #0d95e8); }
+    .icon-ig       { background: linear-gradient(145deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d); }
+    .icon-line     { background: linear-gradient(145deg, #06c755, #05b04c); }
+    .icon-youtube  { background: linear-gradient(145deg, #ff0000, #cc0000); }
+
+    /* ページドット */
+    .page-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin: 8px 0;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.4);
+    }
+
+    .dot.active {
+      background: rgba(255,255,255,0.9);
+      width: 7px;
+    }
+
+    /* Dock */
+    .dock {
+      position: absolute;
+      bottom: 12px;
+      left: 16px;
+      right: 16px;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border-radius: 30px;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .dock .app-name {
+      display: none;
+    }
+
+    .dock .app-icon {
+      width: 62px;
+      height: 62px;
+    }
+
+    /* フォルダー */
+    .folder-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.25);
+      backdrop-filter: blur(10px);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 3px;
+      padding: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: transform 0.15s ease;
+    }
+
+    .folder-icon:hover {
+      transform: scale(1.08);
+    }
+
+    .folder-mini {
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    /* バッジ */
+    .badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: #ff3b30;
+      color: white;
+      font-size: 9px;
+      font-weight: 700;
+      min-width: 16px;
+      height: 16px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+      z-index: 10;
+      border: 1.5px solid rgba(255,255,255,0.3);
+    }
+
+    /* ホームインジケーター */
+    .home-indicator {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 134px;
+      height: 5px;
+      background: rgba(255,255,255,0.6);
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="iphone">
+    <!-- Dynamic Island -->
+    <div class="dynamic-island"></div>
+
+    <!-- 壁紙 -->
+    <div class="wallpaper"></div>
+
+    <!-- ステータスバー -->
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-icons">
+        <span class="status-icon">●●●</span>
+        <span class="status-icon">WiFi</span>
+        <span class="status-icon">🔋</span>
+      </div>
+    </div>
+
+    <!-- ホーム画面コンテンツ -->
+    <div class="home-content">
+
+      <!-- 日付ウィジェット -->
+      <div class="widget-date">
+        <div class="day-name">日曜日</div>
+        <div class="date-num">25</div>
+        <div class="month-year">2026年5月</div>
+      </div>
+
+      <!-- SNS・コミュニケーション -->
+      <div class="app-section">
+        <div class="section-label">📱 コミュニケーション</div>
+        <div class="app-grid">
+          <div class="app-item">
+            <div class="app-icon icon-message">💬</div>
+            <div class="app-name">メッセージ</div>
+          </div>
+          <div class="app-item">
+            <div class="app-icon icon-line">
+              <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' width='32' height='32'%3E%3Cpath d='M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314'/%3E%3C/svg%3E" alt="LINE" style="width:36px;height:36px;">
+            </div>
+            <div class="app-name">LINE</div>
+          </div>
+          <div class="app-item">
+            <div class="app-icon icon-tw">🐦</div>
+            <div class="app-name">X</div>
+          </div>
+          <div class="app-item">
+            <div class="app-icon icon-ig">📷</div>
+            <div class="app-name">Instagram</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- エンタメ -->
+      <div class="app-section">
+        <div class="section-label">🎵 エンタメ</div>
+        <div class="app-grid">
+          <div class="app-item">
+            <div class="app-icon icon-youtube">▶️</div>
+            <div class="app-name">YouTube</div>
+          </div>
+          <div class="app-item">
+            <div class="app-icon icon-music">🎵</div>
+            <div class="app-name">ミュージック</div>
+          </div>
+          <div class="app-item">
+            <div class="app-icon icon-podcast">🎙</div>
+            <div class="app-name">Podcast</div>
+          </div>
+          <div class="app-item">
+            <div class="app-icon icon-photo">🖼️</div>
+            <div class="app-name">写真</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 生産性 -->
+      <div class="app-section">
+        <div class="section-label">📋 生産性</div>
+        <div class="app-grid">
+          <div class="app-item">
+            <div class="app-icon icon-calendar" style="position:relative;">
+              📅
+              <span class="badge">3</span>
+            </div>
+            <div class="app-name">カレンダー</div>
+          </div>
+          <div class="app-item">
+            <div class="app-icon icon-note">📝</div>
+            <div class="app-name">メモ</div>
+          </div>
+          <div class="app-item">
+            <div class="app-icon icon-remind">✅</div>
+            <div class="app-name">リマインダー</div>
+          </div>
+          <div class="app-item">
+            <div class="app-icon icon-mail" style="position:relative;">
+              ✉️
+              <span class="badge">12</span>
+            </div>
+            <div class="app-name">メール</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ページドット -->
+      <div class="page-dots">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+
+    </div><!-- /home-content -->
+
+    <!-- Dock -->
+    <div class="dock">
+      <div class="app-item">
+        <div class="app-icon icon-phone">📞</div>
+      </div>
+      <div class="app-item">
+        <div class="app-icon icon-safari">🧭</div>
+      </div>
+      <div class="app-item">
+        <div class="app-icon icon-mail" style="position:relative;">
+          ✉️
+          <span class="badge">12</span>
+        </div>
+      </div>
+      <div class="app-item">
+        <div class="app-icon icon-music">🎵</div>
+      </div>
+    </div>
+
+    <!-- ホームインジケーター -->
+    <div class="home-indicator"></div>
+  </div>
+
+</body>
+</html>
