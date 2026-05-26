@@ -506,7 +506,70 @@
 
     <!-- ホームインジケーター -->
     <div class="home-indicator"></div>
+
+    <!-- アプリ起動オーバーレイ -->
+    <div id="app-overlay" style="
+      display:none;
+      position:absolute;
+      inset:0;
+      border-radius:55px;
+      background:rgba(0,0,0,0.85);
+      z-index:200;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:16px;
+    ">
+      <div id="overlay-icon" style="
+        width:90px;height:90px;border-radius:22px;
+        display:flex;align-items:center;justify-content:center;
+        font-size:48px;
+        box-shadow:0 8px 32px rgba(0,0,0,0.6);
+      "></div>
+      <div id="overlay-name" style="
+        color:#fff;font-size:20px;font-weight:600;
+      "></div>
+      <div style="color:rgba(255,255,255,0.6);font-size:13px;">タップして閉じる</div>
+    </div>
   </div>
+
+  <script>
+    // アプリアイコンをクリックしたときの演出
+    document.querySelectorAll('.app-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const icon  = item.querySelector('.app-icon');
+        const name  = item.querySelector('.app-name');
+        const overlay = document.getElementById('app-overlay');
+        const oIcon   = document.getElementById('overlay-icon');
+        const oName   = document.getElementById('overlay-name');
+
+        // アイコンの背景色を取得して overlay に反映
+        const bg = window.getComputedStyle(icon).background;
+        oIcon.style.background  = bg;
+        oIcon.textContent       = icon.textContent.trim().replace(/\d+$/, '');
+        oName.textContent       = name ? name.textContent.trim() : '';
+
+        // バウンスアニメーション
+        icon.style.transition = 'transform 0.12s ease';
+        icon.style.transform  = 'scale(0.85)';
+        setTimeout(() => { icon.style.transform = ''; }, 150);
+
+        // オーバーレイ表示
+        overlay.style.display = 'flex';
+        overlay.style.opacity = '0';
+        overlay.style.transition = 'opacity 0.25s';
+        requestAnimationFrame(() => {
+          overlay.style.opacity = '1';
+        });
+      });
+    });
+
+    // オーバーレイをタップで閉じる
+    document.getElementById('app-overlay').addEventListener('click', function() {
+      this.style.opacity = '0';
+      setTimeout(() => { this.style.display = 'none'; }, 250);
+    });
+  </script>
 
 </body>
 </html>
